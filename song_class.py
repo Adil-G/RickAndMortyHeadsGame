@@ -16,13 +16,16 @@ import os
 
 class song:
 
-    def __init__(self, title):
+    def __init__(self, title, wav_file):
 
         if title.endswith(".wav"):
 
             self.title = title
             self.genre = self.title[:self.title.index(".")]
-            self.sample_rate,self.data = scipy.io.wavfile.read("./Music/" + self.title)
+            if wav_file is not None:
+                self.sample_rate,self.data = scipy.io.wavfile.read(wav_file)
+            else:
+                self.sample_rate, self.data = scipy.io.wavfile.read(self.title)
             self.wave = self.data[:,0]
             self.windows = 40
             self.calculate_fft()
@@ -451,156 +454,164 @@ class song:
     def get_descriptor(self):
 
         return {"genre":self.genre,"descriptor":self.descriptor}
-    
-asd = song("start.wav")
-asd.generate_descriptor()
-print asd.get_descriptor()
 
-dictCurrent = asd.get_descriptor()
+class genre_data:
 
-with open('TrainingData.json') as data_file:
-    data = json.load(data_file)
+    def __init__(self, title, wav_file):
+        self.title = title
+        self.wav_file = wav_file
+    def get_genre(self):
+        asd = song(self.title, self.wav_file)
+        asd.generate_descriptor()
+        print asd.get_descriptor()
+
+        dictCurrent = asd.get_descriptor()
+
+        with open('TrainingData.json') as data_file:
+            data = json.load(data_file)
 
 
 
-# FREQ_POEWRS_TAG
-freq_powers = []
-freq_powers_len = 40
-for i in range(0,freq_powers_len-1):
-    freq_powers.append([])
-dict = {
-    "classical": {
-        "volume": [],
-        "BPM_uncertainty": [],
-        "tempo": [],
-        "layers": [],
-        "BPM": [],
-        "freq_power": [],
-        "spectral_flux": [],
-        "MFCC_coef": [],
-        "max_freq": [],
-        "MFCC_mean": [],
-        "complexity": [],
-        "centroid": [],
-        "avg_freq_power": [],
-        "zeros": [],
-        "speed": [],
-        "SSC": [],
-        "rolloff": []
-    },
-    "country": {
-        "volume": [],
-        "BPM_uncertainty": [],
-        "tempo": [],
-        "layers": [],
-        "BPM": [],
-        "freq_power": [],
-        "spectral_flux": [],
-        "MFCC_coef": [],
-        "max_freq": [],
-        "MFCC_mean": [],
-        "complexity": [],
-        "centroid": [],
-        "avg_freq_power": [],
-        "zeros": [],
-        "speed": [],
-        "SSC": [],
-        "rolloff": []
-    },
-    "blues": {
-        "volume": [],
-        "BPM_uncertainty": [],
-        "tempo": [],
-        "layers": [],
-        "BPM": [],
-        "freq_power": [],
-        "spectral_flux": [],
-        "MFCC_coef": [],
-        "max_freq": [],
-        "MFCC_mean": [],
-        "complexity": [],
-        "centroid": [],
-        "avg_freq_power": [],
-        "zeros": [],
-        "speed": [],
-        "SSC": [],
-        "rolloff": []
-    },
-    "disco": {
-        "volume": [],
-        "BPM_uncertainty": [],
-        "tempo": [],
-        "layers": [],
-        "BPM": [],
-        "freq_power": [],
-        "spectral_flux": [],
-        "MFCC_coef": [],
-        "max_freq": [],
-        "MFCC_mean": [],
-        "complexity": [],
-        "centroid": [],
-        "avg_freq_power": [],
-        "zeros": [],
-        "speed": [],
-        "SSC": [],
-        "rolloff": []
-    }
-}
-for item in data:
+        # FREQ_POEWRS_TAG
+        freq_powers = []
+        freq_powers_len = 40
+        for i in range(0,freq_powers_len-1):
+            freq_powers.append([])
+        dict = {
+            "classical": {
+                "volume": [],
+                "BPM_uncertainty": [],
+                "tempo": [],
+                "layers": [],
+                "BPM": [],
+                "freq_power": [],
+                "spectral_flux": [],
+                "MFCC_coef": [],
+                "max_freq": [],
+                "MFCC_mean": [],
+                "complexity": [],
+                "centroid": [],
+                "avg_freq_power": [],
+                "zeros": [],
+                "speed": [],
+                "SSC": [],
+                "rolloff": []
+            },
+            "country": {
+                "volume": [],
+                "BPM_uncertainty": [],
+                "tempo": [],
+                "layers": [],
+                "BPM": [],
+                "freq_power": [],
+                "spectral_flux": [],
+                "MFCC_coef": [],
+                "max_freq": [],
+                "MFCC_mean": [],
+                "complexity": [],
+                "centroid": [],
+                "avg_freq_power": [],
+                "zeros": [],
+                "speed": [],
+                "SSC": [],
+                "rolloff": []
+            },
+            "blues": {
+                "volume": [],
+                "BPM_uncertainty": [],
+                "tempo": [],
+                "layers": [],
+                "BPM": [],
+                "freq_power": [],
+                "spectral_flux": [],
+                "MFCC_coef": [],
+                "max_freq": [],
+                "MFCC_mean": [],
+                "complexity": [],
+                "centroid": [],
+                "avg_freq_power": [],
+                "zeros": [],
+                "speed": [],
+                "SSC": [],
+                "rolloff": []
+            },
+            "disco": {
+                "volume": [],
+                "BPM_uncertainty": [],
+                "tempo": [],
+                "layers": [],
+                "BPM": [],
+                "freq_power": [],
+                "spectral_flux": [],
+                "MFCC_coef": [],
+                "max_freq": [],
+                "MFCC_mean": [],
+                "complexity": [],
+                "centroid": [],
+                "avg_freq_power": [],
+                "zeros": [],
+                "speed": [],
+                "SSC": [],
+                "rolloff": []
+            }
+        }
+        for item in data:
 
-    genreT = data[item]["genre"]
-    desc = data[item]["descriptor"]
-    for tag in desc:
-        #print tag
-        current = desc[tag]
-        value  = dict[genreT][tag]
-        #print(current)
-        if not value:
-            dict[genreT][tag] = current
-        else:
-            for index in range(0, len(current)):
-                fp = current[index]
-                dict[genreT][tag][index] = (value[index] + fp) / 2.0
-            #print current
-pprint(dict)
-dict3 = {
-    "classical": 0.0,
-    "country": 0.0,
-    "blues": 0.0,
-    "disco": 0.0,
-}
-for genreT in dict:
-    print(genreT)
-    genreValueK = dictCurrent["genre"]
+            genreT = data[item]["genre"]
+            desc = data[item]["descriptor"]
+            for tag in desc:
+                #print tag
+                current = desc[tag]
+                value  = dict[genreT][tag]
+                #print(current)
+                if not value:
+                    dict[genreT][tag] = current
+                else:
+                    for index in range(0, len(current)):
+                        fp = current[index]
+                        dict[genreT][tag][index] = (value[index] + fp) / 2.0
+                    #print current
+        pprint(dict)
+        dict3 = {
+            "classical": 0.0,
+            "country": 0.0,
+            "blues": 0.0,
+            "disco": 0.0,
+        }
+        for genreT in dict:
+            print(genreT)
+            genreValueK = dictCurrent["genre"]
 
-    for descriptorT in dict[genreT]:
-        print(descriptorT)
-        descriptorValueK = dictCurrent["descriptor"][descriptorT]
-        descriptorValueT = dict[genreT][descriptorT]
-        for ij in range(0, len(descriptorValueT)):
-            dict3[genreT]+= abs(descriptorValueK[ij] - descriptorValueT[ij])
-pprint(dict3)
-best = float("inf")
-best_genre = ""
-for key in dict3:
-    value = dict3[key]
-    if(value < best):
-        best = value
-        best_genre = key
-print(best_genre)
-'''
-for item in data:
+            for descriptorT in dict[genreT]:
+                print(descriptorT)
+                descriptorValueK = dictCurrent["descriptor"][descriptorT]
+                descriptorValueT = dict[genreT][descriptorT]
+                for ij in range(0, len(descriptorValueT)):
+                    dict3[genreT]+= abs(descriptorValueK[ij] - descriptorValueT[ij])
+        pprint(dict3)
+        best = float("inf")
+        best_genre = ""
+        for key in dict3:
+            value = dict3[key]
+            if(value < best):
+                best = value
+                best_genre = key
+        print(best_genre)
 
-    genreT = data[item]["genre"]
-    print(genreT)
-    current_freq_power = data[item]["descriptor"]["freq_power"]
+        '''
+        for item in data:
 
-    for index in range(0, 39):
-        fp = current_freq_power[index]
-        freq_powers[index].append(fp)
+            genreT = data[item]["genre"]
+            print(genreT)
+            current_freq_power = data[item]["descriptor"]["freq_power"]
 
-results = []
-for item in freq_powers:
-    results.append(numpy.mean(item))
-pprint(results)
-'''
+            for index in range(0, 39):
+                fp = current_freq_power[index]
+                freq_powers[index].append(fp)
+
+        results = []
+        for item in freq_powers:
+            results.append(numpy.mean(item))
+        pprint(results)
+        '''
+        return best_genre

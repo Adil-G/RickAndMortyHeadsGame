@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
                     print "New Song:", file_name
 
-                    song = song_class.song(file_name)
+                    song = song_class.song(file_name, None)
                     song.generate_descriptor()
        
                     test_data[file_name] = song.get_descriptor()
@@ -36,7 +36,7 @@ if __name__ == '__main__':
                     print "New Song:", file_name
 
 
-                    song = song_class.song(file_name)
+                    song = song_class.song(file_name, None)
                     song.generate_descriptor()
        
                     training_data[file_name] = song.get_descriptor()
