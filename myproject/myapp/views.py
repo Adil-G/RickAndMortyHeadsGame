@@ -25,7 +25,7 @@ def list(request):
             # Redirect to the document list after POST
             #return HttpResponseRedirect(reverse('list'))
             name = str(newdoc.docfile.name)
-            newdoc.delete()
+            newdoc.docfile.delete()
             response_text = textwrap.dedent('''\
                         <html>
                         <head>
@@ -38,6 +38,7 @@ def list(request):
                         </body>
                         </html>
                     ''')
+
             return HttpResponse(response_text.encode('utf-8'), content_type="text/plain")
     else:
         form = DocumentForm()  # A empty, unbound form
