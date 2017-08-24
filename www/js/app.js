@@ -23,7 +23,7 @@ angular.module('starter', ['ionic', 'ngCordova'])
   });
 })
 .controller('AppCtrl', function($scope, $ionicPlatform, $cordovaCapture, $cordovaFileTransfer) {
-  $scope.rec_count = 0;
+  $scope.rec_count = 11;
   //$scope.recorderX = new martinescu.Recorder(cordova.file.externalDataDirectory+"/recording0.wav", { sampleRate: 22050 }, statusCallback, bufferCallback);
 
   var statusCallback = function (mediaStatus, error) {
@@ -43,6 +43,7 @@ rec2.stop = function() {
   $scope.upload($scope.wav_location);
 }
 rec2.record = function() {
+  $("#results").empty();
   $scope.wav_location = cordova.file.externalDataDirectory+"/recording"+($scope.rec_count++) + ".wav";
   $scope.recorderX = new martinescu.Recorder($scope.wav_location, { sampleRate: 22050 }, statusCallback, bufferCallback);
   $scope.recorderX.record();
@@ -62,6 +63,7 @@ $scope.upload = function(saved_data) {
         };
         $cordovaFileTransfer.upload("http://corpius4.pythonanywhere.com/myapp/list/", saved_data, options).then(function(result) {
             console.log("SUCCESS: " + JSON.stringify(result.response));
+            $("#results").empty().append(JSON.stringify(result.response));
             $scope.recorderX.release();
         }, function(err) {
             console.log("ERROR: " + JSON.stringify(err));
@@ -71,4 +73,55 @@ $scope.upload = function(saved_data) {
         });
     }
 
+/*
+        // Wait for Cordova to load
+        //
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        // Record audio
+        //
+        function recordAudio() {
+          $scope.wav_location = cordova.file.externalDataDirectory+"/recording"+($scope.rec_count++) + ".wav";
+            var mediaRec = new Media(  $scope.wav_location, onSuccess, onError);
+
+            // Record audio
+            mediaRec.startRecord();
+
+            // Stop recording after 10 sec
+            var recTime = 0;
+            var recInterval = setInterval(function() {
+                recTime = recTime + 1;
+                setAudioPosition(recTime + " sec");
+                if (recTime >= 10) {
+                    clearInterval(recInterval);
+                    mediaRec.stopRecord();
+                }
+            }, 1000);
+        }
+
+        // Cordova is ready
+        //
+        function onDeviceReady() {
+            recordAudio();
+        }
+
+        // onSuccess Callback
+        //
+        function onSuccess() {
+            console.log("recordAudio():Audio Success");
+        }
+
+        // onError Callback
+        //
+        function onError(error) {
+            alert('code: '    + error.code    + '\n' +
+                  'message: ' + error.message + '\n');
+        }
+
+        // Set audio position
+        //
+        function setAudioPosition(position) {
+            document.getElementById('audio_position').innerHTML = position;
+        }
+*/
 });

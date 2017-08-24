@@ -4,7 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <title></title>
-
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.js"
+      integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+      crossorigin="anonymous"></script>
     <link rel="manifest" href="manifest.json">
 
     <!-- un-comment this code to enable service worker
@@ -42,7 +45,9 @@
         <button ion-button ng-click="rec.record();">record</button>
           <button ion-button ng-click="rec.playback();">play</button>
           <button ion-button ng-click="rec.stop();">stop</button>
-
+          <p id="media">Recording audio...</p>
+             <p id="audio_position"></p>
+             <div id="results"></div>
       </ion-content>
     </ion-pane>
   </body>
