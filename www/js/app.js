@@ -41,7 +41,7 @@ rec2.stop = function() {
   $scope.upload($scope.recorderX.location());
 }
 rec2.record = function() {
-  $scope.recorderX = new martinescu.Recorder(cordova.file.externalDataDirectory+"/recording"+scope.rec_count++, { sampleRate: 22050 }, statusCallback, bufferCallback);
+  $scope.recorderX = new martinescu.Recorder(cordova.file.externalDataDirectory+"/recording"+$scope.rec_count++, { sampleRate: 22050 }, statusCallback, bufferCallback);
   $scope.recorderX.record();
 }
 rec2.playback = function() {
