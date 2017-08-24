@@ -24,6 +24,8 @@ angular.module('starter', ['ionic', 'ngCordova'])
 })
 .controller('AppCtrl', function($scope, $ionicPlatform, $cordovaCapture, $cordovaFileTransfer) {
   $scope.rec_count = 0;
+  //$scope.recorderX = new martinescu.Recorder(cordova.file.externalDataDirectory+"/recording0.wav", { sampleRate: 22050 }, statusCallback, bufferCallback);
+
   var statusCallback = function (mediaStatus, error) {
   if (martinescu.Recorder.STATUS_ERROR == mediaStatus) {
     alert(error);
@@ -38,10 +40,11 @@ var bufferCallback = function (buffer) {
 var rec2 = new Object;
 rec2.stop = function() {
   $scope.recorderX.stop();
-  $scope.upload($scope.recorderX.location());
+  $scope.upload($scope.wav_location);
 }
 rec2.record = function() {
-  $scope.recorderX = new martinescu.Recorder(cordova.file.externalDataDirectory+"/recording"+$scope.rec_count++, { sampleRate: 22050 }, statusCallback, bufferCallback);
+  $scope.wav_location = cordova.file.externalDataDirectory+"/recording"+($scope.rec_count++) + ".wav";
+  $scope.recorderX = new martinescu.Recorder($scope.wav_location, { sampleRate: 22050 }, statusCallback, bufferCallback);
   $scope.recorderX.record();
 }
 rec2.playback = function() {
@@ -53,7 +56,7 @@ $scope.upload = function(saved_data) {
         var basename = saved_data.replace(/\\/g,'/').replace(/.*\//, '');
         var options = {
             fileKey: "docfile",
-            fileName: basename,
+            fileName: saved_data,
             chunkedMode: false,
             mimeType: "audio/wav"
         };

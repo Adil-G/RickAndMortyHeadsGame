@@ -41,7 +41,8 @@
             "cordova-plugin-audio-recorder-api": {},
             "cordova-plugin-file-transfer": {},
             "ro.martinescu.audio": {},
-            "cordova-plugin-file": {}
+            "cordova-plugin-file": {},
+            "cordova-plugin-media": {}
         },
         "platforms": [
             "android"
