@@ -25,7 +25,7 @@
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
-
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
@@ -38,7 +38,11 @@
       <ion-header-bar class="bar-stable">
         <h1 class="title">Ionic Blank Starter</h1>
       </ion-header-bar>
-      <ion-content>
+      <ion-content id="contentX" ng-controller="AppCtrl as app_cont" class="padding">
+        <button ion-button ng-click="rec.record();">record</button>
+          <button ion-button ng-click="rec.playback();">play</button>
+          <button ion-button ng-click="rec.stop();">stop</button>
+
       </ion-content>
     </ion-pane>
   </body>
