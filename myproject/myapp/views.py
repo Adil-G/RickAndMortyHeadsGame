@@ -11,16 +11,21 @@ import song_class
 from myproject.myapp.models import Document
 from myproject.myapp.forms import DocumentForm
 import textwrap
+import logging
+
 @csrf_exempt
 def list(request):
+    logger = logging.getLogger()
+    logger.debug("hello")
+    tf = False
     # Handle file upload
-    if request.method == 'POST':
+    if tf or  request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
+        if tf or form.is_valid():
             newdoc = Document(docfile=request.FILES['docfile'])
             newdoc.save()
 
-            song = song_class.genre_data(newdoc.docfile.name,newdoc.docfile.file)
+            song = song_class.genre_data(str(newdoc.docfile.name),newdoc.docfile.file)
             genre = song.get_genre()
             # Redirect to the document list after POST
             #return HttpResponseRedirect(reverse('list'))

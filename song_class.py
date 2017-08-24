@@ -13,17 +13,20 @@ import math
 import time
 import copy
 import os
+import wave, array
 
 class song:
 
     def __init__(self, title, wav_file):
 
         if title.endswith(".wav"):
-
+            self.wav_file = wav_file
+            self.name = title
             self.title = title
             self.genre = self.title[:self.title.index(".")]
             if wav_file is not None:
-                self.sample_rate,self.data = scipy.io.wavfile.read(wav_file)
+                self.make_stereo()
+                self.sample_rate,self.data = scipy.io.wavfile.read("C:/Users/garad/Documents/ionicTests/BTS_GAME/minimal-django-file-upload-example/src/for_django_1-9/myproject/media/"+self.name)
             else:
                 self.sample_rate, self.data = scipy.io.wavfile.read(self.title)
             self.wave = self.data[:,0]
@@ -33,6 +36,24 @@ class song:
         else:
 
             print "Incorrect File Type"
+
+    def make_stereo(self):
+        ifile = wave.open("C:/Users/garad/Documents/ionicTests/BTS_GAME/minimal-django-file-upload-example/src/for_django_1-9/myproject/media/"+self.name)
+        print ifile.getparams()
+        # (1, 2, 44100, 2013900, 'NONE', 'not compressed')
+        (nchannels, sampwidth, framerate, nframes, comptype, compname) = ifile.getparams()
+        assert comptype == 'NONE'  # Compressed not supported yet
+        array_type = {1: 'B', 2: 'h', 4: 'l'}[sampwidth]
+        left_channel = array.array(array_type, ifile.readframes(nframes))[::nchannels]
+        ifile.close()
+
+        stereo = 2 * left_channel
+        stereo[0::2] = stereo[1::2] = left_channel
+
+        ofile = wave.open("C:/Users/garad/Documents/ionicTests/BTS_GAME/minimal-django-file-upload-example/src/for_django_1-9/myproject/media/"+self.name, 'w')
+        ofile.setparams((2, sampwidth, framerate, nframes, comptype, compname))
+        ofile.writeframes(stereo.tostring())
+        ofile.close()
 
     def generate_descriptor(self):
         
@@ -57,7 +78,7 @@ class song:
         self.samples = len(self.data)
         self.song_time = self.samples/self.sample_rate
         
-        self.frequency_range = scipy.arange(self.samples)/self.song_time      
+        self.frequency_range = scipy.arange(self.samples)/self.song_time
         self.fourier = numpy.fft.fft(self.wave)
         self.fourier = self.fourier[range(self.samples / 2)] / max(self.fourier[range(self.samples / 2)])
         self.abs_fourier = [abs(item) for item in self.fourier]
@@ -460,8 +481,9 @@ class genre_data:
     def __init__(self, title, wav_file):
         self.title = title
         self.wav_file = wav_file
+        self.name = title
     def get_genre(self):
-        asd = song(self.title, self.wav_file)
+        asd = song(self.title, self.wav_file )
         asd.generate_descriptor()
         print asd.get_descriptor()
 
@@ -578,6 +600,7 @@ class genre_data:
             "blues": 0.0,
             "disco": 0.0,
         }
+        list_of_bad_descriptors = ["volume", "freq_power", "BPM_uncertainty", "freq_power", ]
         for genreT in dict:
             print(genreT)
             genreValueK = dictCurrent["genre"]
@@ -586,8 +609,9 @@ class genre_data:
                 print(descriptorT)
                 descriptorValueK = dictCurrent["descriptor"][descriptorT]
                 descriptorValueT = dict[genreT][descriptorT]
-                for ij in range(0, len(descriptorValueT)):
-                    dict3[genreT]+= abs(descriptorValueK[ij] - descriptorValueT[ij])
+                if True or not (descriptorT in list_of_bad_descriptors):
+                    for ij in range(0, len(descriptorValueT)):
+                        dict3[genreT]+= abs(descriptorValueK[ij] - descriptorValueT[ij])
         pprint(dict3)
         best = float("inf")
         best_genre = ""
